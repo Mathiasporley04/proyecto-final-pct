@@ -12,7 +12,7 @@ if str(_SRC) not in sys.path:
 
 import streamlit as st  # noqa: E402
 
-from observatorio.ui.vistas import comparar, panorama, portfolio  # noqa: E402
+from observatorio.ui.vistas import comparar, panorama  # noqa: E402
 
 st.set_page_config(
     page_title="Observatorio Financiero LATAM",
@@ -26,7 +26,7 @@ def main() -> None:
     st.sidebar.caption("Cripto · USA · Argentina · Uruguay")
     vista = st.sidebar.radio(
         "Vista",
-        ["Panorama", "Comparar", "Mi Portfolio"],
+        ["Panorama", "Comparar"],
         index=0,
     )
 
@@ -37,10 +37,8 @@ def main() -> None:
 
     if vista == "Panorama":
         panorama.render()
-    elif vista == "Comparar":
-        comparar.render()
     else:
-        portfolio.render()
+        comparar.render()
 
 
 if __name__ == "__main__":
