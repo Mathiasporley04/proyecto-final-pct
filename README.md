@@ -17,10 +17,16 @@ pip install -e ".[dev]"
 ## Ejecutar
 
 ```bash
-streamlit run src/observatorio/ui/app.py
+python -m observatorio.web
 ```
 
-Luego abrir http://localhost:8501
+Luego abrir http://localhost:8000
+
+En desarrollo, con autorecarga al editar:
+
+```bash
+uvicorn observatorio.web.app:app --reload
+```
 
 ## Tests
 

@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% block titulo %}Comparar · Observatorio LATAM{% endblock %}
+{% block migaja %}Comparar{% endblock %}
+
+{% block contenido %}
+<header class="cabecera">
+  <h1>Comparar activos</h1>
+  <p class="subtitulo">
+    El S&amp;P 500 va como base. Agregá hasta 4 activos más (cripto o empresas) para comparar.
+  </p>
+</header>
+
+<form method="get" class="card selector mb" id="selector">
+  <div class="sel-head">
+    <span class="sel-titulo">Activos a comparar</span>
+    <span class="sel-hint">Hasta 5 · el S&amp;P 500 va fijo como base</span>
+  </div>
+
+  <div class="chips">
+    <span class="chip chip-base" title="Siempre incluido como referencia">
+      S&amp;P 500 (índice)<span class="chip-tag">base</span>
+    </span>
+    <span id="chips-adic"></span>
+  </div>
+
+  <div class="combo">
+    <button type="button" class="combo-btn" id="combo-btn" onclick="comboToggle()" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+      <span id="combo-label">Seleccionar activo</span>
+      <svg class="combo-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+
+    <div class="combo-panel oculto" id="combo-panel">
+      <div class="picker-tabs">
+        <button type="button" class="picker-tab activo" data-grupo="cripto" onclick="pickerTab('cripto')">Cripto</button>
+        <button type="button" class="picker-tab" data-grupo="sp500" onclick="pickerTab('sp500')">S&amp;P 500</button>
+      </div>
+      <div class="picker-buscar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="picker-q" placeholder="Buscar por nombre o símbolo…" autocomplete="off" oninput="pickerFiltrar()" />
+      </div>
+      <div class="picker-listas">
+        <div class="picker-lista" data-grupo="cripto">
+          {% for v, it in cripto %}
+          <label class="opt" data-buscar="{{ (it.nombre ~ ' ' ~ it.simbolo) | lower }}">
+            <input type="checkbox" name="activos" value="{{ v }}" data-corto="{{ it.simbolo }}" {% if v in agregados %}checked{% endif %} onchange="onPick(this)" />
+            <span class="opt-nombre">{{ it.nombre }} <span class="opt-sym">{{ it.simbolo }}</span></span>
+            <span class="opt-precio">{{ it.precio_fmt }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        <div class="picker-lista oculto" data-grupo="sp500">
+          {% for v, it in sp500 %}
+          <label class="opt" data-buscar="{{ (it.nombre ~ ' ' ~ it.simbolo) | lower }}">
+            <input type="checkbox" name="activos" value="{{ v }}" data-corto="{{ it.simbolo }}" {% if v in agregados %}checked{% endif %} onchange="onPick(this)" />
+            <span class="opt-nombre">{{ it.nombre }} <span class="opt-sym">{{ it.simbolo }}</span></span>
+            <span class="opt-precio">{{ it.precio_fmt }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="combo-aviso" id="picker-aviso"></div>
+    </div>
+  </div>
+
+  <div class="picker-pie">
+    <label class="control">
+      Período
+      <select name="dias">
+        {% for label, valor in periodos.items() %}
+        <option value="{{ valor }}" {% if valor == dias %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <button type="submit" class="btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M11 18H8a2 2 0 0 1-2-2V9"/></svg>
+      Comparar
+    </button>
+  </div>
+</form>
+
+{% if errores %}
+<div class="alerta">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+  Sin datos para: {{ errores | join(', ') }}
+</div>
+{% endif %}
+
+{% if chart %}
+<section class="card mb">
+  <div class="card-head">
+    <div>
+      <div class="card-titulo">Evolución normalizada (base 100)</div>
+      <div class="card-desc">{{ glosario.base_100 }}</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div id="grafico-norm" class="grafico-lwc"><div class="lwc-legend"></div></div>
+    <script type="application/json" class="lwc-chart" id="grafico-norm-data" data-target="grafico-norm">{{ chart | tojson }}</script>
+  </div>
+</section>
+{% else %}
+<div class="card mb"><p class="info">No se pudo obtener ninguna serie para los activos elegidos.</p></div>
+{% endif %}
+
+{% if filas %}
+<section class="card mb">
+  <div class="card-head"><div class="card-titulo">Métricas por activo</div></div>
+  <div class="card-body">
+    <div class="tabla-wrap">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Activo</th>
+            <th>Rendimiento %</th>
+            <th>Volatilidad anual</th>
+            <th>Clasificación</th>
+            <th>Peor caída %</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in filas %}
+          <tr>
+            <td class="activo-celda">{{ f.activo }}</td>
+            <td class="{{ 'pos' if f.rendimiento >= 0 else 'neg' }}">{{ f.rendimiento }}</td>
+            <td>{{ f.volatilidad }}</td>
+            <td>{{ f.clasificacion }}</td>
+            <td class="neg">{{ f.peor_caida }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <details class="glosario">
+      <summary>¿Qué significan estas métricas?</summary>
+      <ul>
+        <li><strong>Rendimiento %:</strong> {{ glosario.rendimiento }}</li>
+        <li><strong>Volatilidad:</strong> {{ glosario.volatilidad }}</li>
+        <li><strong>Peor caída %:</strong> {{ glosario.drawdown }}</li>
+      </ul>
+    </details>
+  </div>
+</section>
+{% endif %}
+
+{% if heatmap %}
+<section class="card">
+  <div class="card-head">
+    <div>
+      <div class="card-titulo">Correlación entre activos</div>
+      <div class="card-desc">{{ glosario.correlacion }}</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="tabla-wrap">
+      <table class="heatmap">
+        <thead>
+          <tr>
+            <th></th>
+            {% for l in heatmap.labels %}<th title="{{ heatmap.fulls[loop.index0] }}">{{ l }}</th>{% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for fila in heatmap.filas %}
+          <tr>
+            <th title="{{ fila.full }}">{{ fila.label }}</th>
+            {% for c in fila.celdas %}<td style="background: {{ c.color }}">{{ c.valor }}</td>{% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  var MAX_ADIC = {{ max_adic }};
+
+  function comboToggle() {
+    var p = document.getElementById("combo-panel");
+    var oculto = p.classList.toggle("oculto");
+    document.getElementById("combo-btn").setAttribute("aria-expanded", oculto ? "false" : "true");
+  }
+  function pickerTab(g) {
+    document.querySelectorAll(".picker-tab").forEach(function (b) { b.classList.toggle("activo", b.dataset.grupo === g); });
+    document.querySelectorAll(".picker-lista").forEach(function (l) { l.classList.toggle("oculto", l.dataset.grupo !== g); });
+    pickerFiltrar();
+  }
+  function pickerFiltrar() {
+    var q = (document.getElementById("picker-q").value || "").trim().toLowerCase();
+    var lista = document.querySelector(".picker-lista:not(.oculto)");
+    if (!lista) return;
+    lista.querySelectorAll(".opt").forEach(function (o) {
+      o.style.display = (!q || o.dataset.buscar.indexOf(q) !== -1) ? "" : "none";
+    });
+  }
+  function tildados() {
+    return Array.prototype.slice.call(document.querySelectorAll("#selector input[name=activos]:checked"));
+  }
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function onPick(cb) {
+    if (cb.checked && tildados().length > MAX_ADIC) {
+      cb.checked = false;
+      var a = document.getElementById("picker-aviso");
+      a.textContent = "Máximo " + MAX_ADIC + " activos además del S&P 500. Quitá uno para agregar otro.";
+      setTimeout(function () { a.textContent = ""; }, 2600);
+      return;
+    }
+    rebuildChips();
+    updateLimit();
+  }
+  function rebuildChips() {
+    var cont = document.getElementById("chips-adic");
+    cont.innerHTML = tildados().map(function (cb) {
+      var corto = cb.dataset.corto || cb.value;
+      return '<span class="chip"><span>' + esc(corto) +
+        '</span><button type="button" class="chip-x" data-v="' + esc(cb.value) +
+        '" onclick="quitar(this)" aria-label="Quitar">&times;</button></span>';
+    }).join("");
+  }
+  function quitar(btn) {
+    var v = btn.dataset.v;
+    document.querySelectorAll("#selector input[name=activos]").forEach(function (cb) {
+      if (cb.value === v) cb.checked = false;
+    });
+    rebuildChips();
+    updateLimit();
+  }
+  function updateLimit() {
+    var n = tildados().length;
+    var lleno = n >= MAX_ADIC;
+    document.querySelectorAll("#selector input[name=activos]").forEach(function (cb) {
+      var opt = cb.closest(".opt");
+      if (lleno && !cb.checked) { cb.disabled = true; opt.classList.add("opt-off"); }
+      else { cb.disabled = false; opt.classList.remove("opt-off"); }
+    });
+    var lbl = document.getElementById("combo-label");
+    if (lbl) lbl.textContent = n ? ("Seleccionar activo (" + n + "/" + MAX_ADIC + ")") : "Seleccionar activo";
+  }
+  window.addEventListener("DOMContentLoaded", function () { rebuildChips(); updateLimit(); });
+</script>
+{% endblock %}
