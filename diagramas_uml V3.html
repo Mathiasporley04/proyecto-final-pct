@@ -142,7 +142,7 @@
 
   <div class="diagram">
 
-    <svg viewBox="0 280 2100 1280" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 280 2100 1100" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <marker id="inherit" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="16" markerHeight="16" orient="auto">
           <polygon points="1,1 15,8 1,15" fill="#ffffff" stroke="#2a2a2a" stroke-width="1.4"/>
@@ -261,8 +261,7 @@
         <line class="cls-divider" x1="1900" y1="392" x2="2060" y2="392"/>
         <text class="cls-attr" x="1980" y="420" text-anchor="middle">CRIPTO</text>
         <text class="cls-attr" x="1980" y="442" text-anchor="middle">ACCION_USA</text>
-        <text class="cls-attr" x="1980" y="464" text-anchor="middle">ACCION_ARG</text>
-        <text class="cls-attr" x="1980" y="486" text-anchor="middle">DIVISA</text>
+        <text class="cls-attr" x="1980" y="464" text-anchor="middle">DIVISA</text>
         <line class="cls-divider" x1="1900" y1="500" x2="2060" y2="500" stroke-dasharray="3 2"/>
         <text class="cls-note" x="1980" y="522" text-anchor="middle">usado por</text>
         <text class="cls-note" x="1980" y="540" text-anchor="middle">Activo.tipo</text>
@@ -296,7 +295,7 @@
       <!-- =========================================== -->
       <text class="zone-label" x="30" y="700">B · Subclases de Activo</text>
 
-      <!-- 4 subclases stacked verticalmente -->
+      <!-- 3 subclases stacked verticalmente -->
       <g>
         <rect class="cls-rect" x="100" y="710" width="320" height="140" rx="2"/>
         <text class="cls-name" x="260" y="738" text-anchor="middle">Cripto</text>
@@ -317,32 +316,22 @@
       </g>
 
       <g>
-        <rect class="cls-rect" x="100" y="1090" width="320" height="140" rx="2"/>
-        <text class="cls-name" x="260" y="1118" text-anchor="middle">AccionArg</text>
+        <rect class="cls-rect" x="100" y="1090" width="320" height="160" rx="2"/>
+        <text class="cls-name" x="260" y="1118" text-anchor="middle">Divisa</text>
         <line class="cls-divider" x1="100" y1="1130" x2="420" y2="1130"/>
-        <text class="cls-attr" x="116" y="1154">+ panel: str?</text>
-        <line class="cls-divider" x1="100" y1="1166" x2="420" y2="1166"/>
-        <text class="cls-method" x="116" y="1190">+ precio_actual_usd(tasas) → float</text>
-      </g>
-
-      <g>
-        <rect class="cls-rect" x="100" y="1290" width="320" height="160" rx="2"/>
-        <text class="cls-name" x="260" y="1318" text-anchor="middle">Divisa</text>
-        <line class="cls-divider" x1="100" y1="1330" x2="420" y2="1330"/>
-        <text class="cls-attr" x="116" y="1354">+ par: str</text>
-        <text class="cls-attr" x="116" y="1374">+ tipo_cotizacion: str</text>
-        <line class="cls-divider" x1="100" y1="1386" x2="420" y2="1386"/>
-        <text class="cls-method" x="116" y="1410">+ precio_actual_usd(tasas) → float</text>
+        <text class="cls-attr" x="116" y="1154">+ par: str</text>
+        <text class="cls-attr" x="116" y="1174">+ tipo_cotizacion: str</text>
+        <line class="cls-divider" x1="100" y1="1186" x2="420" y2="1186"/>
+        <text class="cls-method" x="116" y="1210">+ precio_actual_usd(tasas) → float</text>
       </g>
 
       <!-- Inheritance lines Activo subclases → Activo -->
       <!-- Stubs (right side of each subclase) -->
       <line class="rel-line" x1="420" y1="780" x2="460" y2="780"/>
       <line class="rel-line" x1="420" y1="970" x2="460" y2="970"/>
-      <line class="rel-line" x1="420" y1="1160" x2="460" y2="1160"/>
-      <line class="rel-line" x1="420" y1="1370" x2="460" y2="1370"/>
+      <line class="rel-line" x1="420" y1="1170" x2="460" y2="1170"/>
       <!-- Vertical spine at x=460 -->
-      <line class="rel-line" x1="460" y1="780" x2="460" y2="1370"/>
+      <line class="rel-line" x1="460" y1="780" x2="460" y2="1170"/>
       <!-- Spine up to Activo bottom -->
       <line class="rel-line" x1="460" y1="780" x2="460" y2="640"/>
       <line class="rel-line" x1="460" y1="640" x2="580" y2="640"/>
@@ -378,9 +367,9 @@
 
       <g>
         <rect class="cls-rect" x="1180" y="1090" width="380" height="180" rx="2"/>
-        <text class="cls-name" x="1370" y="1118" text-anchor="middle">Data912API</text>
+        <text class="cls-name" x="1370" y="1118" text-anchor="middle">DolarApiUY</text>
         <line class="cls-divider" x1="1180" y1="1130" x2="1560" y2="1130"/>
-        <text class="cls-attr" x="1196" y="1154">+ nombre = "data912"</text>
+        <text class="cls-attr" x="1196" y="1154">+ nombre = "dolar_api_uy"</text>
         <text class="cls-attr" x="1196" y="1174">+ timeout: int</text>
         <line class="cls-divider" x1="1180" y1="1186" x2="1560" y2="1186"/>
         <text class="cls-method" x="1196" y="1210">+ precio_actual(simbolo) → Cotizacion</text>
@@ -388,26 +377,13 @@
         <text class="cls-method" x="1196" y="1254">+ precio_actual_async(simbolo) → Cotizacion</text>
       </g>
 
-      <g>
-        <rect class="cls-rect" x="1180" y="1290" width="380" height="180" rx="2"/>
-        <text class="cls-name" x="1370" y="1318" text-anchor="middle">DolarApiUY</text>
-        <line class="cls-divider" x1="1180" y1="1330" x2="1560" y2="1330"/>
-        <text class="cls-attr" x="1196" y="1354">+ nombre = "dolar_api_uy"</text>
-        <text class="cls-attr" x="1196" y="1374">+ timeout: int</text>
-        <line class="cls-divider" x1="1180" y1="1386" x2="1560" y2="1386"/>
-        <text class="cls-method" x="1196" y="1410">+ precio_actual(simbolo) → Cotizacion</text>
-        <text class="cls-method" x="1196" y="1432">+ historico(simbolo, desde, hasta) → list</text>
-        <text class="cls-method" x="1196" y="1454">+ precio_actual_async(simbolo) → Cotizacion</text>
-      </g>
-
       <!-- Inheritance lines FuenteDatos subclases → FuenteDatos -->
       <!-- Stubs (left side of each subclase) -->
       <line class="rel-line" x1="1180" y1="800" x2="1140" y2="800"/>
       <line class="rel-line" x1="1180" y1="990" x2="1140" y2="990"/>
       <line class="rel-line" x1="1180" y1="1180" x2="1140" y2="1180"/>
-      <line class="rel-line" x1="1180" y1="1380" x2="1140" y2="1380"/>
       <!-- Vertical spine at x=1140 -->
-      <line class="rel-line" x1="1140" y1="800" x2="1140" y2="1380"/>
+      <line class="rel-line" x1="1140" y1="800" x2="1140" y2="1180"/>
       <!-- Spine up to FuenteDatos bottom -->
       <line class="rel-line" x1="1140" y1="800" x2="1140" y2="640"/>
       <line class="rel-line" x1="1140" y1="640" x2="980" y2="640"/>
@@ -419,7 +395,7 @@
       <!-- =========================================== -->
       <!-- LEYENDA -->
       <!-- =========================================== -->
-      <g transform="translate(40, 1510)">
+      <g transform="translate(40, 1330)">
         <rect fill="#ffffff" stroke="#e8e8e8" stroke-width="1" x="-10" y="-22" width="1020" height="46" rx="4"/>
         <line class="rel-line" x1="10" y1="6" x2="56" y2="6" marker-end="url(#inherit)"/>
         <text class="legend-text" x="64" y="10">Herencia</text>
@@ -458,7 +434,7 @@
   <article class="cls-doc stereotype-type">
     <h4>TipoMercado</h4>
     <div class="path">«enumeration» · core/tipos.py</div>
-    <p><span class="label">Qué hace</span> Enum de los cuatro tipos de mercado soportados: <code>CRIPTO</code>, <code>ACCION_USA</code>, <code>ACCION_ARG</code>, <code>DIVISA</code>. Hereda de <code>str</code> + <code>Enum</code> para serializarse directo a texto.</p>
+    <p><span class="label">Qué hace</span> Enum de los tres tipos de mercado soportados: <code>CRIPTO</code>, <code>ACCION_USA</code>, <code>DIVISA</code>. Hereda de <code>str</code> + <code>Enum</code> para serializarse directo a texto.</p>
     <p><span class="label">Se vincula con</span> <code>Activo.tipo</code> (cada subclase devuelve su valor), <code>Mercado.tipo</code> (clasifica el conjunto), y la UI lo usa para etiquetas y filtros.</p>
   </article>
 
@@ -482,7 +458,7 @@
     <h4>Activo  <em>{abstract}</em></h4>
     <div class="path">«ABC» · core/activo.py</div>
     <p><span class="label">Qué hace</span> Contrato común de todo activo financiero: tiene <code>simbolo</code>, <code>nombre</code>, <code>moneda_nativa</code> y una <code>fuente</code> inyectada (composición). Provee <code>obtener_historico()</code> como método concreto que delega en la fuente. Las subclases solo deben implementar <code>tipo</code> y <code>precio_actual_usd()</code>.</p>
-    <p><span class="label">Se vincula con</span> Tiene una <code>FuenteDatos</code> (composición). Sus 4 subclases (<code>Cripto</code>, <code>AccionUSA</code>, <code>AccionArg</code>, <code>Divisa</code>) implementan el polimorfismo. <code>Mercado</code> agrega activos en una lista.</p>
+    <p><span class="label">Se vincula con</span> Tiene una <code>FuenteDatos</code> (composición). Sus 3 subclases (<code>Cripto</code>, <code>AccionUSA</code>, <code>Divisa</code>) implementan el polimorfismo. <code>Mercado</code> agrega activos en una lista.</p>
   </article>
 
   <article class="cls-doc">
@@ -500,13 +476,6 @@
   </article>
 
   <article class="cls-doc">
-    <h4>AccionArg</h4>
-    <div class="path">extends Activo · activos/accion_arg.py</div>
-    <p><span class="label">Qué hace</span> Acción argentina del Merval. Cotiza en ARS, así que <code>precio_actual_usd()</code> divide por <code>tasas["ARS"]</code>. Si la tasa no está, lanza <code>DatoInvalido</code>. Agrega <code>panel</code> (lider, general, cedears).</p>
-    <p><span class="label">Se vincula con</span> Hereda de <code>Activo</code>. Apunta a <code>TipoMercado.ACCION_ARG</code>. Suele usarse con <code>Data912API</code>. Lanza <code>DatoInvalido</code> si falta la tasa.</p>
-  </article>
-
-  <article class="cls-doc">
     <h4>Divisa</h4>
     <div class="path">extends Activo · activos/divisa.py</div>
     <p><span class="label">Qué hace</span> Par cambiario. La "cotización" de la fuente es UYU por USD (o similar), entonces <code>precio_actual_usd()</code> invierte (<code>1/cotizacion</code>). Tiene <code>par</code> ("USD/UYU") y <code>tipo_cotizacion</code> (BROU, BCU, MEP...).</p>
@@ -519,7 +488,7 @@
     <h4>FuenteDatos  <em>{abstract}</em></h4>
     <div class="path">«ABC» · core/fuente.py</div>
     <p><span class="label">Qué hace</span> Contrato uniforme para cualquier API externa. Tres métodos abstractos: <code>precio_actual(simbolo)</code>, <code>historico(simbolo, desde, hasta)</code>, <code>listar_disponibles()</code>. Un método concreto: <code>precio_actual_async()</code> que por default delega en <code>asyncio.to_thread(self.precio_actual, ...)</code>. Las subclases con I/O nativo aiohttp overridean ese método.</p>
-    <p><span class="label">Se vincula con</span> Cuatro subclases concretas (CoinGecko, Yahoo, Data912, DolarApi). Es la <em>parte fuente</em> de la composición con <code>Activo</code>. Devuelve <code>Cotizacion</code> y listas de <code>PuntoPrecio</code>. Puede lanzar <code>FuenteIndisponible</code>.</p>
+    <p><span class="label">Se vincula con</span> Tres subclases concretas (CoinGecko, Yahoo, DolarApi). Es la <em>parte fuente</em> de la composición con <code>Activo</code>. Devuelve <code>Cotizacion</code> y listas de <code>PuntoPrecio</code>. Puede lanzar <code>FuenteIndisponible</code>.</p>
   </article>
 
   <article class="cls-doc">
@@ -534,13 +503,6 @@
     <div class="path">extends FuenteDatos · fuentes/yahoo_finance.py</div>
     <p><span class="label">Qué hace</span> Wrapper sobre <code>yfinance</code> (síncrono y bloqueante). Provee <code>precio_actual</code> (último cierre) e <code>historico</code> (rango diario). No overridea <code>precio_actual_async</code>; usa el default que despacha en thread vía <code>asyncio.to_thread</code>.</p>
     <p><span class="label">Se vincula con</span> Hereda de <code>FuenteDatos</code>. Devuelve <code>Cotizacion</code> en USD. Fuente típica de <code>AccionUSA</code>. Cubre también índices como <code>^GSPC</code> (S&amp;P 500).</p>
-  </article>
-
-  <article class="cls-doc">
-    <h4>Data912API</h4>
-    <div class="path">extends FuenteDatos · fuentes/data912.py</div>
-    <p><span class="label">Qué hace</span> Cliente HTTP para <code>data912.com/live/arg_stocks</code>. Trae el snapshot completo del Merval y filtra por símbolo. El endpoint no expone histórico público, así que <code>historico()</code> devuelve lista vacía.</p>
-    <p><span class="label">Se vincula con</span> Hereda de <code>FuenteDatos</code>. Devuelve <code>Cotizacion</code> en ARS. Fuente típica de <code>AccionArg</code>.</p>
   </article>
 
   <article class="cls-doc">

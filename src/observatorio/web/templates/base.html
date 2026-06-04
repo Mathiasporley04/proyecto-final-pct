@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="referrer" content="no-referrer" />
   <title>{% block titulo %}Observatorio Financiero LATAM{% endblock %}</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>📊</text></svg>" />
   <script>
@@ -18,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/estilos.css" />
+  <link rel="stylesheet" href="/static/estilos.css?v=5" />
   <script src="/static/lightweight-charts.standalone.production.js" defer></script>
 </head>
 <body>
@@ -48,16 +49,6 @@
           </a>
         </div>
       </nav>
-
-      <div class="sidebar-foot">
-        <div class="foot-card">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-          <div>
-            <div class="foot-title">Modo educativo</div>
-            <div class="foot-sub">No es asesoramiento financiero</div>
-          </div>
-        </div>
-      </div>
     </aside>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
@@ -83,7 +74,6 @@
 
       <main class="contenido">
         {% block contenido %}{% endblock %}
-        {% if disclaimer %}<footer class="disclaimer">{{ disclaimer }}</footer>{% endif %}
       </main>
     </div>
   </div>

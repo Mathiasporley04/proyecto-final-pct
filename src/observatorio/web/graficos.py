@@ -22,8 +22,13 @@ _SEG_DIA = 86400  # segundos por dia
 def serie_payload(
     series_fechas: dict[str, list[datetime]],
     series_precios: dict[str, list[float]],
+    base_100: bool = True,
 ) -> dict:
-    """Payload para Lightweight Charts: series normalizadas a base 100.
+    """Payload para Lightweight Charts.
+
+    Con `base_100=True` (default) cada serie se reescala a 100 en su primer dia,
+    para comparar evolucion relativa. Con `base_100=False` se grafican los
+    precios reales (valores numericos), util cuando interesa el precio absoluto.
 
     Todas las series se llevan a una grilla DIARIA comun (un punto por dia, el
     ultimo del dia) y se alinean sobre la union de fechas con *forward-fill*: si
@@ -43,19 +48,20 @@ def serie_payload(
     # 2) Union de dias (eje temporal compartido).
     todos_los_dias = sorted({d for por_dia in diarios.values() for d in por_dia})
 
-    # 3) Normalizar a base 100 (primer dia de cada serie) y forward-fill.
+    # 3) Normalizar a base 100 (primer dia de cada serie) o dejar el precio
+    #    real (base_100=False), y forward-fill.
     series = []
     for i, (nombre, por_dia) in enumerate(diarios.items()):
         dias = sorted(por_dia)
         if not dias:
             continue
         base = por_dia[dias[0]]
-        factor = (100.0 / base) if base else 1.0
+        factor = (100.0 / base) if (base_100 and base) else 1.0
         data = []
         ultimo: float | None = None
         for dia in todos_los_dias:
             if dia in por_dia:
-                ultimo = round(por_dia[dia] * factor, 4)
+                ultimo = round(por_dia[dia] * factor, 4 if base_100 else 6)
             if ultimo is not None:
                 data.append({"time": dia, "value": ultimo})
         series.append({"name": nombre, "color": PALETA[i % len(PALETA)], "data": data})

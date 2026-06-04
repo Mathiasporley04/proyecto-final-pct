@@ -16,6 +16,7 @@ from observatorio.core.excepciones import FuenteIndisponible
 from observatorio.core.fuente import FuenteDatos
 from observatorio.core.tipos import PuntoPrecio
 from observatorio.fuentes.registro import fuentes_default
+from observatorio.web.noticias import noticias_recientes
 from observatorio.web.sp500 import SP500_TOP
 
 # Universo de activos comparables (los que tienen historico real).
@@ -36,7 +37,6 @@ TARJETAS_PANORAMA: list[tuple[str, str, str, str]] = [
     ("uy", "USD", "Dólar (Uruguay)", "dolar"),
     ("cripto", "BTC", "Bitcoin", "bitcoin"),
     ("usa", "^GSPC", "S&P 500", "tendencia"),
-    ("arg", "GGAL", "GGAL (Merval)", "banco"),
 ]
 
 # Periodos disponibles -> dias.
@@ -68,7 +68,12 @@ def obtener_serie(
     clave_fuente: str, simbolo: str, dias: int
 ) -> tuple[list[datetime], list[float]]:
     """Devuelve (fechas, precios) del historico. Lista vacia si la fuente falla."""
-    hasta = datetime.now(timezone.utc)
+    # Cuantizamos la ventana a la hora en curso para que el cache TTL del
+    # historico sea efectivo. Sin esto, cada request genera un `now()` distinto
+    # (al microsegundo), la clave de cache nunca coincide y se golpea la API en
+    # cada llamada; CoinGecko (market_chart, plan gratis) responde 429 enseguida.
+    # Con la hora fija, hay como mucho una llamada por (simbolo, dias) por hora.
+    hasta = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
     desde = hasta - timedelta(days=dias)
     try:
         puntos: list[PuntoPrecio] = fuentes()[clave_fuente].historico(simbolo, desde, hasta)
@@ -206,6 +211,7 @@ def _precalentar_una_vez() -> None:
         series_en_paralelo(_PRECALENTAR_PANORAMA, 30)
         universo_disponible()  # mercados cripto + precios S&P en lote (cacheados)
         series_en_paralelo(_PRECALENTAR_COMPARAR, 90)
+        noticias_recientes()  # mantener las noticias de la home calientes
     except Exception:
         # El precalentamiento nunca debe tumbar el servidor.
         pass

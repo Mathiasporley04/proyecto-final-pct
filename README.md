@@ -1,6 +1,6 @@
 # Observatorio Financiero LATAM
 
-Aplicacion Python que permite visualizar y comparar simultaneamente cuatro mercados financieros relevantes para un usuario latinoamericano: criptomonedas, bolsa estadounidense, bolsa argentina y cotizaciones de divisas en Uruguay (BROU).
+Aplicacion Python que permite visualizar y comparar simultaneamente tres mercados financieros relevantes para un usuario latinoamericano: criptomonedas, bolsa estadounidense y cotizaciones de divisas en Uruguay (BROU).
 
 > Producto **informativo y educativo**. **No constituye asesoramiento financiero.**
 
