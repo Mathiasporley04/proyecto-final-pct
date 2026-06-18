@@ -1,9 +1,16 @@
 {% extends "base.html" %}
-{% block titulo %}Comparar · Observatorio LATAM{% endblock %}
+{% block titulo %}Comparar · Observatorio{% endblock %}
 {% block migaja %}Comparar{% endblock %}
 
 {% block contenido %}
-{% macro bloque(num, titulo, desc, opciones, campo, b, chart_id, con_corr, limite, agrupar=false) %}
+{% macro opcion(v, it, campo, seleccion) %}
+<label class="opt" data-buscar="{{ (it.nombre ~ ' ' ~ it.simbolo) | lower }}">
+  <input type="checkbox" name="{{ campo }}" value="{{ v }}" {% if v in seleccion %}checked{% endif %} onchange="onPick('{{ campo }}')" />
+  <span class="opt-nombre">{{ it.nombre }} <span class="opt-sym">{{ it.simbolo }}</span></span>
+  <span class="opt-precio">{{ it.precio_fmt }}</span>
+</label>
+{% endmacro %}
+{% macro bloque(num, titulo, desc, opciones, campo, b, chart_id, limite, agrupar=false) %}
 <section class="card mb">
   <div class="card-head">
     <div>
@@ -66,31 +73,6 @@
       </table>
     </div>
     {% endif %}
-
-    {% if con_corr and b.heatmap %}
-    <div>
-      <div class="card-titulo" style="font-size: 0.9rem;">Correlación entre activos</div>
-      <div class="card-desc">{{ glosario.correlacion }}</div>
-      <div class="tabla-wrap" style="margin-top: 0.75rem;">
-        <table class="heatmap">
-          <thead>
-            <tr>
-              <th></th>
-              {% for l in b.heatmap.labels %}<th title="{{ b.heatmap.fulls[loop.index0] }}">{{ l }}</th>{% endfor %}
-            </tr>
-          </thead>
-          <tbody>
-            {% for fila in b.heatmap.filas %}
-            <tr>
-              <th title="{{ fila.full }}">{{ fila.label }}</th>
-              {% for c in fila.celdas %}<td style="background: {{ c.color }}">{{ c.valor }}</td>{% endfor %}
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    {% endif %}
   </div>
 </section>
 
@@ -110,17 +92,19 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         <input type="text" placeholder="Buscar por nombre o símbolo…" data-lista="lista-{{ campo }}" oninput="filtrarLista(this)" autocomplete="off" />
       </div>
-      <div class="picker-lista" id="lista-{{ campo }}" data-max="{{ limite }}" data-campo="{{ campo }}">
-        {% for v, it in opciones %}
-        {% if agrupar and loop.changed(it.grupo) %}
-        <div class="opt-grupo">{{ 'Cripto' if it.grupo == 'cripto' else 'S&P 500' }}</div>
-        {% endif %}
-        <label class="opt" data-buscar="{{ (it.nombre ~ ' ' ~ it.simbolo) | lower }}">
-          <input type="checkbox" name="{{ campo }}" value="{{ v }}" {% if v in b.seleccion %}checked{% endif %} onchange="onPick('{{ campo }}')" />
-          <span class="opt-nombre">{{ it.nombre }} <span class="opt-sym">{{ it.simbolo }}</span></span>
-          <span class="opt-precio">{{ it.precio_fmt }}</span>
-        </label>
+      <div class="picker-lista{% if agrupar %} picker-split{% endif %}" id="lista-{{ campo }}" data-max="{{ limite }}" data-campo="{{ campo }}">
+        {% if agrupar %}
+        {% for clave, etiqueta in [('cripto', 'Cripto'), ('sp500', 'S&P 500')] %}
+        <div class="picker-col">
+          <div class="picker-col-head">{{ etiqueta }}</div>
+          <div class="picker-col-body">
+            {% for v, it in opciones if it.grupo == clave %}{{ opcion(v, it, campo, b.seleccion) }}{% endfor %}
+          </div>
+        </div>
         {% endfor %}
+        {% else %}
+        {% for v, it in opciones %}{{ opcion(v, it, campo, b.seleccion) }}{% endfor %}
+        {% endif %}
       </div>
     </div>
     <div class="modal-foot">
@@ -137,7 +121,7 @@
 
 <header class="cabecera">
   <h1>Comparar activos</h1>
-  <p class="subtitulo">En Cripto y S&amp;P, un activo muestra su <strong>precio real</strong> y dos o más se normalizan a <strong>base 100</strong>. La mixta siempre usa base 100 + correlación.</p>
+  <p class="subtitulo">En Cripto y S&amp;P, un activo muestra su <strong>precio real</strong> y dos o más se normalizan a <strong>base 100</strong>. La mixta siempre usa base 100.</p>
 </header>
 
 <form method="get" id="form-comparar">
@@ -158,9 +142,9 @@
     </div>
   </div>
 
-  {{ bloque("①", "Cripto vs Cripto", "Un activo muestra su precio real; con dos o más, base 100 para compararlos.", cripto_opts, "cripto_sel", b_crip, "grafico-cripto", false, max_bloque) }}
-  {{ bloque("②", "S&P 500 vs S&P 500", "Un activo muestra su precio real; con dos o más, base 100 para compararlos.", sp_opts, "sp_sel", b_sp, "grafico-sp", false, max_bloque) }}
-  {{ bloque("③", "Mixto · base 100 + correlación", "Cripto y acciones juntas (distinguidas por tipo), normalizadas a base 100.", mixto_opts, "activos", b_mix, "grafico-mixto", true, max_bloque, true) }}
+  {{ bloque("①", "Cripto vs Cripto", "Un activo muestra su precio real; con dos o más, base 100 para compararlos.", cripto_opts, "cripto_sel", b_crip, "grafico-cripto", max_bloque) }}
+  {{ bloque("②", "S&P 500 vs S&P 500", "Un activo muestra su precio real; con dos o más, base 100 para compararlos.", sp_opts, "sp_sel", b_sp, "grafico-sp", max_bloque) }}
+  {{ bloque("③", "Mixto · base 100", "Cripto y acciones juntas (distinguidas por tipo), normalizadas a base 100.", mixto_opts, "activos", b_mix, "grafico-mixto", max_bloque, true) }}
 </form>
 
 <details class="glosario">
@@ -182,10 +166,6 @@
     if (!lista) return;
     lista.querySelectorAll(".opt").forEach(function (o) {
       o.style.display = (!q || o.dataset.buscar.indexOf(q) !== -1) ? "" : "none";
-    });
-    // Los encabezados de grupo solo tienen sentido sin búsqueda activa.
-    lista.querySelectorAll(".opt-grupo").forEach(function (h) {
-      h.style.display = q ? "none" : "";
     });
   }
 

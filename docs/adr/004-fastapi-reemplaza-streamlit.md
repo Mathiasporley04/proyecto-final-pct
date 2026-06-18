@@ -38,3 +38,13 @@ Reemplazar la UI de Streamlit por **FastAPI + Jinja2 + Plotly.js**.
   Streamlit; a cambio se gana control fino del layout.
 - La documentacion de portafolio anterior que menciona Streamlit queda como registro
   historico del proceso (no se reescribe).
+
+## Actualizacion (2026-06-18)
+- Se **removio** la tabla-heatmap de correlacion del bloque mixto (y su codigo de
+  soporte `heatmap_correlacion`/`_color_correlacion`). La metrica de dominio
+  `matriz_correlacion` sigue en `metricas/`; solo se quito de la UI. El bloque mixto
+  queda como comparativa base 100.
+- Pulido de UI/marca: selector mixto en dos paneles (Cripto | S&P), scrollbars propios
+  del tema, sidebar neutro (sin el azul saturado), logo candlestick, "Panorama" ->
+  "Panel central" y se quito "LATAM" de la marca. Detalle en
+  `docs/portafolio/etapa-8-web.md`.

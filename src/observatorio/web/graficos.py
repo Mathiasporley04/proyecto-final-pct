@@ -1,16 +1,13 @@
 """Preparacion de datos para los graficos del front.
 
-- Series temporales -> payload para TradingView Lightweight Charts (se dibujan
-  en el navegador: crosshair, escala de precios, zoom/pan).
-- Correlaciones -> matriz con colores (RdYlGn) para una tabla-heatmap en HTML.
+Series temporales -> payload para TradingView Lightweight Charts (se dibujan
+en el navegador: crosshair, escala de precios, zoom/pan).
 
 No se usa Plotly: el front es liviano (sin bundle pesado).
 """
 from __future__ import annotations
 
 from datetime import datetime
-
-from observatorio.metricas import matriz_correlacion
 
 # Paleta categorica acorde a la estetica neutral de shadcn.
 PALETA = ["#6366f1", "#10b981", "#f59e0b", "#a855f7", "#ef4444", "#0ea5e9"]
@@ -66,35 +63,3 @@ def serie_payload(
                 data.append({"time": dia, "value": ultimo})
         series.append({"name": nombre, "color": PALETA[i % len(PALETA)], "data": data})
     return {"series": series}
-
-
-# --- Heatmap de correlacion (RdYlGn) renderizado como tabla HTML ---
-
-_STOPS = [(-1.0, (215, 48, 39)), (0.0, (255, 255, 191)), (1.0, (26, 152, 80))]
-
-
-def _color_correlacion(v: float) -> str:
-    """Mapea una correlacion [-1, 1] a un color hex de la escala RdYlGn."""
-    v = max(-1.0, min(1.0, v))
-    if v <= 0:
-        (x0, c0), (x1, c1) = _STOPS[0], _STOPS[1]
-    else:
-        (x0, c0), (x1, c1) = _STOPS[1], _STOPS[2]
-    t = 0.0 if x1 == x0 else (v - x0) / (x1 - x0)
-    r, g, b = (round(c0[k] + (c1[k] - c0[k]) * t) for k in range(3))
-    return f"#{r:02x}{g:02x}{b:02x}"
-
-
-def heatmap_correlacion(series_precios: dict[str, list[float]]) -> dict:
-    """Matriz de correlaciones con color por celda, lista para una tabla HTML."""
-    m = matriz_correlacion(series_precios)
-    labels = list(m.keys())
-    cortos = [lab.split(" (")[0] for lab in labels]
-    filas = []
-    for i, a in enumerate(labels):
-        celdas = [
-            {"valor": f"{m[a][b]:.2f}", "color": _color_correlacion(m[a][b])}
-            for b in labels
-        ]
-        filas.append({"label": cortos[i], "full": a, "celdas": celdas})
-    return {"labels": cortos, "fulls": labels, "filas": filas}

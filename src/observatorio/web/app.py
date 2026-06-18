@@ -1,8 +1,8 @@
-"""Servidor web (FastAPI) del Observatorio Financiero LATAM.
+"""Servidor web (FastAPI) del Observatorio Financiero.
 
 Sirve HTML server-rendered. Los graficos de lineas se dibujan con TradingView
-Lightweight Charts y la correlacion con una tabla-heatmap (sin librerias
-pesadas). Las fuentes se consultan en paralelo. Ver ADR-004.
+Lightweight Charts (sin librerias pesadas). Las fuentes se consultan en
+paralelo. Ver ADR-004.
 
 Ejecutar:
     python -m observatorio.web
@@ -34,7 +34,7 @@ from observatorio.web.datos import (
     universo_disponible,
 )
 from observatorio.web.glosario import GLOSARIO
-from observatorio.web.graficos import heatmap_correlacion, serie_payload
+from observatorio.web.graficos import serie_payload
 from observatorio.web.noticias import noticias_destacadas, noticias_recientes
 
 _AQUI = Path(__file__).resolve().parent
@@ -47,7 +47,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Observatorio Financiero LATAM", lifespan=lifespan)
+app = FastAPI(title="Observatorio Financiero", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=str(_AQUI / "static")), name="static")
 
 # Series fijas que dibuja el panorama (comparativa rapida cripto vs bolsa USA).
@@ -100,10 +100,10 @@ _MAX_BLOQUE = 5  # tope de activos por bloque (mas que esto el grafico se vuelve
 
 
 def _bloque_comparacion(
-    universo: dict, valores: list[str], dias: int, correlacion: bool,
+    universo: dict, valores: list[str], dias: int,
     base_100: bool = True, auto: bool = False,
 ) -> dict:
-    """Arma un bloque: grafico + tabla de metricas (+ correlacion opcional).
+    """Arma un bloque: grafico de lineas + tabla de metricas.
 
     Con `auto=True` el grafico usa precio real si hay un solo activo y base 100
     si hay dos o mas (asi una comparativa con escalas dispares no queda ilegible).
@@ -130,7 +130,6 @@ def _bloque_comparacion(
         "chart": serie_payload(series_fechas, series_precios, base_100=base_100) if series_precios else None,
         "filas": filas,
         "errores": errores,
-        "heatmap": heatmap_correlacion(series_precios) if correlacion and len(series_precios) >= 2 else None,
         "seleccion": set(valores),
     }
 
@@ -151,7 +150,7 @@ def comparar(
     activos: list[str] | None = Query(default=None),
     dias: int = 90,
 ):
-    """Tres comparaciones base 100: cripto vs cripto, S&P vs S&P, y una mixta con correlacion."""
+    """Tres comparaciones base 100: cripto vs cripto, S&P vs S&P, y una mixta."""
     if dias not in PERIODOS_COMPARAR.values():
         dias = 90
 
@@ -190,9 +189,9 @@ def comparar(
             "cripto_opts": cripto_opts,
             "sp_opts": sp_opts,
             "mixto_opts": mixto_opts,
-            "b_crip": _bloque_comparacion(universo, sel_crip, dias, correlacion=False, auto=True),
-            "b_sp": _bloque_comparacion(universo, sel_sp, dias, correlacion=False, auto=True),
-            "b_mix": _bloque_comparacion(universo, sel_mix, dias, correlacion=True, base_100=True),
+            "b_crip": _bloque_comparacion(universo, sel_crip, dias, auto=True),
+            "b_sp": _bloque_comparacion(universo, sel_sp, dias, auto=True),
+            "b_mix": _bloque_comparacion(universo, sel_mix, dias, base_100=True),
             "glosario": GLOSARIO,
             "disclaimer": _DISCLAIMER,
         },

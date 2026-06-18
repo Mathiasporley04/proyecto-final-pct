@@ -1,5 +1,6 @@
-"""Capa web (FastAPI) del Observatorio Financiero LATAM.
+"""Capa web (FastAPI) del Observatorio Financiero.
 
 Reemplaza la UI de Streamlit por un servidor web normal que sirve HTML
-con graficos Plotly renderizados en el navegador. Ver ADR-004.
+con graficos TradingView Lightweight Charts renderizados en el navegador.
+Ver ADR-004.
 """
